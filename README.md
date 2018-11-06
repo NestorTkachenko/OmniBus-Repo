@@ -8,7 +8,7 @@ Use following command to pull changes:
 Push changes with:
 >git *
 
->git commit -m "First commit"
+>git commit -m "commit message"
 
 >git push
 

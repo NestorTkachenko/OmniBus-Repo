@@ -8,9 +8,11 @@ Use following command to pull changes:
 Push changes with:
 >git *
 
+(or 'git add .' if new files added)
+
 >git commit -m "commit message"
 
->git push
+>git push https://github.com/NestorTkachenko/OmniBus-Repo.git master
 
 Run on Expo with:
 >expo start --tunnel

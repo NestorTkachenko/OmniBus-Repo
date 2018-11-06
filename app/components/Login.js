@@ -63,7 +63,31 @@ export default class Login extends React.Component {
   }
 
   login = () => {
-    alert('Log In Test');
+    
+      fetch('https:// IP ADDRESS and PORT/users', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: this.state.username,
+          password: this.state.password,
+        })
+      })
+      .then((response) => response.json())
+      .then((res) => {
+        if(res.success === true) {
+          AsyncStorage.setItem('user', res.user);
+          this.props.navigation.navigate('Profile');
+        }
+
+        else {
+          alert(res.message);
+        }
+      })
+      .done();
+
   }
 
 }

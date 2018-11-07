@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, AsyncStorage, } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-
+import { Auth } from 'aws-amplify';
 
 export default class Login extends React.Component {
 
@@ -9,7 +9,12 @@ export default class Login extends React.Component {
     super(props);
     this.state = {
       username: '',
-      password: ''
+      password: '',
+      email: '',
+      phone_number: '',
+      confirmation_code: '',
+      user: {},
+
     }
   }
 
@@ -50,9 +55,42 @@ export default class Login extends React.Component {
             underlineColorAndroid = 'transparent'  
           />
 
+          <TextInput 
+            style = {styles.textInput} 
+            placeholder = 'email' 
+            onChangeText = { (email) => this.setState({email})}
+            underlineColorAndroid = 'transparent'  
+          />
+
+          <TextInput 
+            style = {styles.textInput} 
+            placeholder = 'phone number' 
+            onChangeText = { (phone_number) => this.setState({phone_number})}
+            underlineColorAndroid = 'transparent'  
+          />
+
+          <TextInput 
+            style = {styles.textInput} 
+            placeholder = 'confirmation code' 
+            onChangeText = { (confirmation_code) => this.setState({confirmation_code})}
+            underlineColorAndroid = 'transparent'  
+          />
+
           <TouchableOpacity
             style = {styles.button}
-            onPress = {this.login}>
+            onPress = {this.signup.bind(this)}>
+            <Text>Sign Up</Text>
+          </TouchableOpacity>
+
+           <TouchableOpacity
+            style = {styles.button}
+            onPress = {this.confirmsignup.bind(this)}>
+            <Text>Confirm Sign Up</Text>
+          </TouchableOpacity>
+
+           <TouchableOpacity
+            style = {styles.button}
+            onPress = {this.login.bind(this)}>
             <Text>Log In</Text>
           </TouchableOpacity>
 
@@ -62,35 +100,39 @@ export default class Login extends React.Component {
     );
   }
 
-  login = () => {
+  signup() {
     
-      fetch('https:// IP ADDRESS and PORT/users', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: this.state.username,
-          password: this.state.password,
+      Auth.signUp({
+        username: this.state.username,
+        password: this.state.password,
+        attributes: {
+          email: this.state.email,
+          //phone_number: this.state.phone_number
+        }
+        //validationData: []  //optional
         })
-      })
-      .then((response) => response.json())
-      .then((res) => {
-        if(res.success === true) {
-          AsyncStorage.setItem('user', res.user);
-          this.props.navigation.navigate('Profile');
-        }
+        .then(data => console.log('successful sign up!'))
+        .catch(err => console.log('error signing up!: ', err));
 
-        else {
-          alert(res.message);
-        }
-      })
-      .done();
+      }
 
+  confirmsignup() {
+    
+      Auth.confirmSignUp(this.state.username, this.state.confirmation_code)
+        .then(data =>  console.log('successful confirm sign up!'))
+        .catch(err => console.log('error confirming signing up!: ', err));
+
+    }
+
+  login() {
+    Auth.signIn(this.state.username, this.state.password)
+    .then(user => {
+      console.log('successful sign in!')
+    })
+    .catch(err => console.log('error signing in!: ', err))
   }
 
-}
+  }
 
 const styles = StyleSheet.create({
 

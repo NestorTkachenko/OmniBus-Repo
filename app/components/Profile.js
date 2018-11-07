@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpaci
 import { StackNavigator } from 'react-navigation';
 
 
-export default class Login extends React.Component {
+export default class Profile extends React.Component {
   
 
   render() {

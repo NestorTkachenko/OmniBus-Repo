@@ -1,0 +1,6 @@
+type Passanger @model {
+  id: ID!
+  name: String!
+  description: String
+  location: String
+}

@@ -4,6 +4,7 @@ import { createStackNavigator } from 'react-navigation';
 
 import Amplify, { Auth } from 'aws-amplify';
 import aws_exports from './aws-exports';
+import {API, graphqlOperation} from 'aws-amplify';
 Amplify.configure(aws_exports);
 
 import Login from './app/components/Login';

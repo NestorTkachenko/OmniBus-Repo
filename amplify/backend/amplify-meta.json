@@ -19,7 +19,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/mnius-20181107095725-deployment/amplify-cfn-templates/auth/cognito35375b37-cloudformation-template.yml",
 				"logicalId": "authcognito35375b37"
 			},
-			"lastPushTimeStamp": "2018-11-07T15:01:36.427Z",
+			"lastPushTimeStamp": "2018-11-09T15:06:46.563Z",
 			"output": {
 				"AppClientSecret": "1f096arvsrf0jefnbkn0530q66sies21f117ec2slpu8r15fnos5",
 				"UserPoolId": "us-east-1_8gqVLbLLT",
@@ -30,6 +30,24 @@
 				"UserPoolName": "cognito35375b37_userpool_35375b37"
 			},
 			"lastPushDirHash": "ZypHeDOZtnERXaRpvib0zaEDOoE="
+		}
+	},
+	"api": {
+		"omnibus": {
+			"service": "AppSync",
+			"providerPlugin": "awscloudformation",
+			"output": {
+				"securityType": "API_KEY",
+				"GraphQLAPIIdOutput": "6brd6un4wzazzbpfiiwclgbhpi",
+				"GraphQLAPIEndpointOutput": "https://wg23kdqp4nhurdv4fwz5eetgri.appsync-api.us-east-1.amazonaws.com/graphql",
+				"GraphQLAPIKeyOutput": "da2-un637qswybgp5ajwbttxgskstm"
+			},
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/mnius-20181107095725-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+				"logicalId": "apiomnibus"
+			},
+			"lastPushTimeStamp": "2018-11-09T15:06:48.239Z",
+			"lastPushDirHash": "+2nZBD3t2VMM7bxuQlsLWiEQaJw="
 		}
 	}
 }

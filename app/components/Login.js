@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, AsyncStorage, } from 'react-native';
+import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, AsyncStorage, ScrollView} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import { Auth } from 'aws-amplify';
 
@@ -36,9 +36,8 @@ export default class Login extends React.Component {
   render() {
     return (
       <KeyboardAvoidingView behavior = 'padding' style = {styles.wrapper}>
-
         <View style = {styles.container}>
-
+          <ScrollView style = {{width: "100%" }} showsVerticalScrollIndicator={false}>
           <Text style = {styles.header}>- LOGIN -</Text>
 
           <TextInput 
@@ -93,9 +92,8 @@ export default class Login extends React.Component {
             onPress = {this.login.bind(this)}>
             <Text>Log In</Text>
           </TouchableOpacity>
-
+          </ScrollView>
         </View>
-
       </KeyboardAvoidingView>
     );
   }
@@ -119,7 +117,7 @@ export default class Login extends React.Component {
   confirmsignup() {
     
       Auth.confirmSignUp(this.state.username, this.state.confirmation_code)
-        .then(data =>  console.log('successful confirm sign up!'))
+        .then(data =>  this.props.navigation.navigate('Profile'))
         .catch(err => console.log('error confirming signing up!: ', err));
 
     }
@@ -127,7 +125,7 @@ export default class Login extends React.Component {
   login() {
     Auth.signIn(this.state.username, this.state.password)
     .then(user => {
-      console.log('successful sign in!')
+      this.props.navigation.navigate('Profile');
     })
     .catch(err => console.log('error signing in!: ', err))
   }
@@ -157,12 +155,16 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     padding: 16,
     marginBottom: 20,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    borderRadius: 10,
   },
   button: {
     alignSelf: 'stretch',
     backgroundColor: '#01c853',
     padding: 20,
     alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+    borderRadius: 10
   },
 });

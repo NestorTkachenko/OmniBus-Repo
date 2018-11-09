@@ -1,0 +1,116 @@
+type Passanger {
+  id: ID!
+  name: String!
+  description: String
+  location: String
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPassangerConnection {
+  items: [Passanger]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  contains: Int
+  notContains: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  contains: Float
+  notContains: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelPassangerFilterInput {
+  id: ModelIDFilterInput
+  name: ModelStringFilterInput
+  description: ModelStringFilterInput
+  location: ModelStringFilterInput
+  and: [ModelPassangerFilterInput]
+  or: [ModelPassangerFilterInput]
+  not: ModelPassangerFilterInput
+}
+
+type Query {
+  getPassanger(id: ID!): Passanger
+  listPassangers(filter: ModelPassangerFilterInput, limit: Int, nextToken: String): ModelPassangerConnection
+}
+
+input CreatePassangerInput {
+  id: ID
+  name: String!
+  description: String
+  location: String
+}
+
+input UpdatePassangerInput {
+  id: ID!
+  name: String
+  description: String
+  location: String
+}
+
+input DeletePassangerInput {
+  id: ID
+}
+
+type Mutation {
+  createPassanger(input: CreatePassangerInput!): Passanger
+  updatePassanger(input: UpdatePassangerInput!): Passanger
+  deletePassanger(input: DeletePassangerInput!): Passanger
+}
+
+type Subscription {
+  onCreatePassanger: Passanger @aws_subscribe(mutations: ["createPassanger"])
+  onUpdatePassanger: Passanger @aws_subscribe(mutations: ["updatePassanger"])
+  onDeletePassanger: Passanger @aws_subscribe(mutations: ["deletePassanger"])
+}

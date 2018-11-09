@@ -1,0 +1,7 @@
+{
+    "AppSyncApiName": "omnibus",
+    "schemaGraphql": "s3://mnius-20181107095725-deployment/amplify-appsync-files/schema.graphql.1541775742682",
+    "ResolverBucket": "mnius-20181107095725-deployment",
+    "ResolverRootKey": "amplify-appsync-files",
+    "DeploymentTimestamp": "1541775742682"
+}

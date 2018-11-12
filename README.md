@@ -1,14 +1,16 @@
 # OmniBus-Repo
 Collaborative Repository for OmniBus
 
+After Cloning, Run Following Command to set up node modules:
+
+>npm install
+
 Use following command to pull changes:
 
 >git pull https://github.com/NestorTkachenko/OmniBus-Repo.git master
 
 Push changes with:
->git add *
-
-(or 'git add .' if new files added)
+>git add 
 
 >git commit -m "commit message"
 

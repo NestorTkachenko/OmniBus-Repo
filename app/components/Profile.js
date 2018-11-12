@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, AsyncStorage, } from 'react-native';
+import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, AsyncStorage, Modal, TouchableHighlight, Alert, TouchableWithoutFeedback} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import {API, graphqlOperation} from 'aws-amplify';
 import * as mutations from '../../src/graphql/mutations';
+import { MapView } from 'expo';
 
 
 const query = `
@@ -24,8 +25,15 @@ export default class Profile extends React.Component {
     this.state = {
       users: [],
       newUser: '',
+      modalVisible: false,
       }
     }
+
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
+
 
   async componentDidMount() {
     const data = await API.graphql(graphqlOperation(query))
@@ -36,46 +44,97 @@ export default class Profile extends React.Component {
 
   render() {
     return (
+      <View style={
+        {
+          flex: 1,
+          justifyContent: 'flex-end',
+          alignItems: 'center'
+        }
+      }>
+      <MapView style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0  }}
+        initialRegion={{
+          latitude:42.9814,
+          longitude:-70.9478,
+          latitudeDelta:0.05,
+          longitudeDelta:0.05
 
+        }}
+        //ref = {(mapView) => { mainMap = mapView; }}
+        showsCompass = {false}
+        >
+      </MapView>
+      
         <View style = {styles.container}>
 
-          <Text style = {styles.header}>Member Page {"\n"}</Text>
+            <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.modalVisible}
+            onRequestClose={() => {
+              this.setModalVisible(false);
+            }}>
+            <TouchableHighlight onPress={() => {
+                    this.setModalVisible(!this.state.modalVisible);
+                  }}
+                  style = {{flex: 1}}
+                  underlayColor={"transparent"}>
+            <View />
+            </TouchableHighlight>
+              <View style = {styles.outerContainer}>
+              <View style = {styles.modalContainer}>
+                
+                <Text style = {styles.header}>Member Page {"\n"}</Text>
 
-          <TextInput 
-            style = {styles.textInput} 
-            placeholder = 'User Name' 
-            onChangeText = { (newUser) => this.setState({newUser})}
-            underlineColorAndroid = 'transparent'  
-          />
+                <TextInput 
+                  style = {styles.textInput} 
+                  placeholder = 'User Name' 
+                  onChangeText = { (newUser) => this.setState({newUser})}
+                  underlineColorAndroid = 'transparent'  
+                />
 
-          <TouchableOpacity
-            style = {styles.button}
-            onPress = {this.deleteUser}>
-            <Text>Remove User</Text>
-          </TouchableOpacity>
+                <TouchableOpacity
+                  style = {styles.button}
+                  onPress = {this.deleteUser}>
+                  <Text>Remove User</Text>
+                </TouchableOpacity>
 
-          <Text style = {styles.header}>Member Page {"\n"}</Text>
+                <Text style = {styles.header}>Member Page {"\n"}</Text>
 
-          <TouchableOpacity
-            style = {styles.button}
-            onPress = {this.addUser}>
-            <Text>New User</Text>
-          </TouchableOpacity>
+                <TouchableOpacity
+                  style = {styles.button}
+                  onPress = {this.addUser}>
+                  <Text>New User</Text>
+                </TouchableOpacity>
 
-          {
-            this.state.users.map((user, index) => (
-              <Text style = {styles.header} key = {index}>{user.name}</Text>
-              ))
-          }
+                {
+                  this.state.users.map((user, index) => (
+                    <Text style = {styles.header} key = {index}>{user.name}</Text>
+                    ))
+                }
+
+                 <TouchableOpacity
+                  style = {styles.button}
+                  onPress = {this.logout.bind(this)}>
+                  <Text>Log Out</Text>
+                </TouchableOpacity>
+              </View>
+              </View>
+          </Modal>
 
            <TouchableOpacity
-            style = {styles.button}
-            onPress = {this.logout.bind(this)}>
-            <Text>Log Out</Text>
-          </TouchableOpacity>
-
+                style = {styles.button}
+                onPress={() => {
+                  this.setModalVisible(true);
+                }}>
+                <Text>Show Modal</Text>
+            </TouchableOpacity>
         </View>
-
+      </View>
     );
   }
 
@@ -111,16 +170,24 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#2896d3',
     alignItems: 'center',
     justifyContent: 'center',
     paddingLeft: 40,
     paddingRight: 40,
   },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 30,
+    borderRadius: 10,
+    padding: 30,
+  },
   header: {
     fontSize: 24,
     marginBottom: 60,
-    color: '#fff',
+    color: 'black',
     fontWeight: 'bold', 
   },
   button: {
@@ -128,13 +195,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#01c853',
     padding: 20,
     alignItems: 'center',
+    borderRadius: 5,
   },
   textInput: {
     alignSelf: 'stretch',
     padding: 16,
     marginBottom: 20,
-    backgroundColor: '#fff',
+    backgroundColor: 'grey',
     borderRadius: 10,
+  },
+  outerContainer: {
+    position: "absolute", 
+    top: 0, 
+    left: 0, 
+    right: 0, 
+    bottom: 0, 
+    justifyContent: "center"
   },
 
 });

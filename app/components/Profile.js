@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpaci
 import { StackNavigator } from 'react-navigation';
 import {API, graphqlOperation} from 'aws-amplify';
 import * as mutations from '../../src/graphql/mutations';
+import * as subscriptions from '../../src/graphql/subscriptions';
 import { MapView } from 'expo';
 
 
@@ -15,6 +16,8 @@ const query = `
     }
 }
 `
+
+
 
 
 export default class Profile extends React.Component {
@@ -40,9 +43,16 @@ export default class Profile extends React.Component {
     this.setState({
       users: data.data.listUsers.items
     })
+    this.interval = setInterval(this.updateMap, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   render() {
+    
+
     return (
       <View style={
         {
@@ -67,6 +77,17 @@ export default class Profile extends React.Component {
         //ref = {(mapView) => { mainMap = mapView; }}
         showsCompass = {false}
         >
+
+        {
+          this.state.users.map((user, index) => (
+            <MapView.Marker
+            coordinate={JSON.parse(user.location)}
+            title={user.name}
+            description={'Bus'}
+            />
+            ))
+          }
+
       </MapView>
       
         <View style = {styles.container}>
@@ -111,12 +132,6 @@ export default class Profile extends React.Component {
                   <Text>New User</Text>
                 </TouchableOpacity>
 
-                {
-                  this.state.users.map((user, index) => (
-                    <Text style = {styles.header} key = {index}>{user.name}</Text>
-                    ))
-                }
-
                  <TouchableOpacity
                   style = {styles.button}
                   onPress = {this.logout.bind(this)}>
@@ -141,6 +156,13 @@ export default class Profile extends React.Component {
   logout() {
       this.props.navigation.navigate('Home');
   };
+
+  updateMap = async() => {
+    const data = await API.graphql(graphqlOperation(query))
+    this.setState({
+      users: data.data.listUsers.items
+    })
+  }
 
 
   addUser = async () => {

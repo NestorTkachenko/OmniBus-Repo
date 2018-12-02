@@ -4,18 +4,10 @@ import { StackNavigator } from 'react-navigation';
 import {API, graphqlOperation} from 'aws-amplify';
 import * as mutations from '../../src/graphql/mutations';
 import * as subscriptions from '../../src/graphql/subscriptions';
-import { MapView } from 'expo';
+import * as queries from '../../src/graphql/queries';
+import { MapView, Location, Permissions } from 'expo';
 
 
-const query = `
-  query {
-    listUsers{
-      items{
-        id name location
-      }
-    }
-}
-`
 
 
 
@@ -29,6 +21,7 @@ export default class Profile extends React.Component {
       users: [],
       newUser: '',
       modalVisible: false,
+      location: null,
       }
     }
 
@@ -39,11 +32,27 @@ export default class Profile extends React.Component {
 
 
   async componentDidMount() {
-    const data = await API.graphql(graphqlOperation(query))
+    Location.watchPositionAsync({distanceInterval: 0, enableHighAccuracy: true}, this.locationChanged);
+    const data = await API.graphql(graphqlOperation(queries.listDriverLists))
     this.setState({
-      users: data.data.listUsers.items
+      users: data.data.listDriverLists.items
     })
     this.interval = setInterval(this.updateMap, 1000);
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      this.setState({
+        errorMessage: 'Permission to access location was denied',
+      });
+    }
+  }
+
+  locationChanged = (location) => {
+    location = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude
+    };
+    
+    this.setState({location: location});
   }
 
   componentWillUnmount() {
@@ -77,12 +86,18 @@ export default class Profile extends React.Component {
         //ref = {(mapView) => { mainMap = mapView; }}
         showsCompass = {false}
         >
-
+        {this.state.location ? 
+          <MapView.Marker
+            coordinate={this.state.location}
+            title={'You'}
+            description={'Your Location'}
+            /> : null}
         {
           this.state.users.map((user, index) => (
             <MapView.Marker
-            coordinate={JSON.parse(user.location)}
+            coordinate={JSON.parse(user.coords)}
             title={user.name}
+            key = {index}
             description={'Bus'}
             />
             ))
@@ -111,32 +126,13 @@ export default class Profile extends React.Component {
                 
                 <Text style = {styles.header}>Member Page {"\n"}</Text>
 
-                <TextInput 
-                  style = {styles.textInput} 
-                  placeholder = 'User Name' 
-                  onChangeText = { (newUser) => this.setState({newUser})}
-                  underlineColorAndroid = 'transparent'  
-                />
-
-                <TouchableOpacity
-                  style = {styles.button}
-                  onPress = {this.deleteUser}>
-                  <Text>Remove User</Text>
-                </TouchableOpacity>
-
-                <Text style = {styles.header}>Member Page {"\n"}</Text>
-
-                <TouchableOpacity
-                  style = {styles.button}
-                  onPress = {this.addUser}>
-                  <Text>New User</Text>
-                </TouchableOpacity>
 
                  <TouchableOpacity
                   style = {styles.button}
                   onPress = {this.logout.bind(this)}>
                   <Text>Log Out</Text>
                 </TouchableOpacity>
+
               </View>
               </View>
           </Modal>
@@ -158,33 +154,11 @@ export default class Profile extends React.Component {
   };
 
   updateMap = async() => {
-    const data = await API.graphql(graphqlOperation(query))
+    const data = await API.graphql(graphqlOperation(queries.listDriverLists))
     this.setState({
-      users: data.data.listUsers.items
+      users: data.data.listDriverLists.items
     })
   }
-
-
-  addUser = async () => {
-      const newTodo = await API.graphql(graphqlOperation(mutations.createUser, {input: {name: this.state.newUser, location: 'coords here'}}));
-      const data = await API.graphql(graphqlOperation(query))
-      this.setState({
-        users: data.data.listUsers.items
-      })
-  };
-
-  deleteUser = async () => {
-      for(var i = 0; i < this.state.users.length; i++) {
-        if(this.state.users[i].name == this.state.newUser) {
-          await API.graphql(graphqlOperation(mutations.deleteUser, {input: {id: this.state.users[i].id}}));
-        }
-      }
-
-      const data = await API.graphql(graphqlOperation(query))
-      this.setState({
-        users: data.data.listUsers.items
-      })
-  };
 
 }
 
